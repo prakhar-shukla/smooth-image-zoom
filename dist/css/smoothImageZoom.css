@@ -1,10 +1,7 @@
-img.zoomable-image {
+.zoomable-image  {
     max-width: 100%;
     height: auto;
     transition: transform 0.3s;
-}
-
-.zoomable-image  {
     cursor: zoom-in;
 }
 

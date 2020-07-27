@@ -5,28 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sequential Multi File Input</title>
+    <title>Smooth Image Zoom</title>
 
     <link rel="stylesheet" href="./dist/css/smoothImageZoom.css">
 </head>
-<style>
-    .image-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-gap: 15px;
-    }
-</style>
+
 
 <body>
-    <div class="image-grid">
-        <img class="zoomable-image" src="https://picsum.photos/400?random=1" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=2" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=3" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=4" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=5" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=6" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=7" loading="auto" />
-        <img class="zoomable-image" src="https://picsum.photos/400?random=8" loading="auto" />
+    <div>
+        <img class="zoomable-image" src="https://picsum.photos/200/400?random=1" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/400/200?random=2" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/600/200?random=3" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/600/100?random=3" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/100/400?random=4" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/400/100?random=5" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/1000?random=6" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/300/400?random=7" loading="auto" />
+        <img class="zoomable-image" src="https://picsum.photos/400/300?random=8" loading="auto" />
     </div>
 
     <div class="image-backdrop"></div>
