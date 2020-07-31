@@ -9,12 +9,14 @@
         window.smoothImageZoom = factory();
     }
 }(function () {
+
     let imageResizing = false;
-    function zoomUnzoomImage(resizeEvent) {
+
+    const zoomUnzoomImage = function (resizeEvent) {
         if (!resizeEvent && this.classList.contains('zoomed')) {
             this.classList.remove('zoomed');
             this.style.transform = "";
-            document.querySelector('.image-backdrop').classList.remove('zoomed');
+            document.querySelector('.full-screen-image-backdrop').classList.remove('zoomed');
             removeZoomOutListeners();
             removeResizeListener();
         }
@@ -46,52 +48,52 @@
 
             this.style.transform = "scale(" + imageScale + ") translate(" + xOffset + "px," + yOffset + "px) ";
             this.classList.add('zoomed');
-            document.querySelector('.image-backdrop').classList.add('zoomed');
+            document.querySelector('.full-screen-image-backdrop').classList.add('zoomed');
             registerZoomOutListeners();
             registerResizeListener();
         }
     }
 
-    function registerZoomOutListeners() {
+    const registerZoomOutListeners = function () {
         // zoom out on scroll
         document.addEventListener('scroll', scrollZoomOut);
         // zoom out on escape
         document.addEventListener('keyup', escapeClickZoomOut);
         // zoom out on clicking the backdrop
-        document.querySelector('.image-backdrop').addEventListener('click', backDropClickZoomOut);
+        document.querySelector('.full-screen-image-backdrop').addEventListener('click', backDropClickZoomOut);
     }
 
-    function removeZoomOutListeners() {
+    const removeZoomOutListeners = function () {
         document.removeEventListener('scroll', scrollZoomOut);
         document.removeEventListener('keyup', escapeClickZoomOut);
-        document.querySelector('.image-backdrop').removeEventListener('click', backDropClickZoomOut);
+        document.querySelector('.full-screen-image-backdrop').removeEventListener('click', backDropClickZoomOut);
     }
 
-    function registerResizeListener() {
+    const registerResizeListener = function () {
         window.addEventListener('resize', onWindowResize)
     }
 
-    function removeResizeListener() {
+    const removeResizeListener = function () {
         window.removeEventListener('resize', onWindowResize)
     }
 
-    function scrollZoomOut() {
+    const scrollZoomOut = function () {
         if (document.querySelector('.zoomable-image.zoomed') && !imageResizing) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
     }
-    function backDropClickZoomOut() {
+    const backDropClickZoomOut = function () {
         if (document.querySelector('.zoomable-image.zoomed')) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
     }
-    function escapeClickZoomOut(event) {
+    const escapeClickZoomOut = function (event) {
         if (event.key === "Escape" && document.querySelector('.zoomable-image.zoomed')) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
     }
 
-    function onWindowResize() {
+    const onWindowResize = function () {
         imageResizing = true;
         if (document.querySelector('.zoomable-image.zoomed')) {
             debounce(
@@ -102,7 +104,7 @@
         }
     }
 
-    function getBoundingClientRect(element) {
+    const getBoundingClientRect = function (element) {
         var rect = element.getBoundingClientRect();
         return {
             top: rect.top,
@@ -115,7 +117,7 @@
             y: rect.y
         };
     }
-    function debounce(func, delay) {
+    const debounce = function (func, delay) {
         let debounceTimer
         return function () {
             const context = this
@@ -125,13 +127,33 @@
                 = setTimeout(() => func.apply(context, args), delay)
         }
     }
-    function init() {
+    const injectCssAndBackDrop = function () {
+        let myStyle = [
+            ".zoomable-image { max-width: 100%; height: auto; transition: transform 0.3s; cursor: zoom-in; }",
+            ".zoomable-image.zoomed { z-index: 100; position: relative; cursor: zoom-out;}",
+            ".full-screen-image-backdrop.zoomed { position: fixed; top: 0; right: 0; left: 0; bottom: 0; z-index: 50; background-color: rgba(255, 255, 255, 0.95); }"
+        ].join(' ')
+        var head = document.head || document.getElementsByTagName('head')[0];
+        var body = document.body || document.getElementsByTagName('body')[0];
+
+        var style = document.createElement('style');
+        var backDrop = document.createElement('div')
+
+        style.type = "text/css";
+        style.appendChild(document.createTextNode(myStyle));
+
+        backDrop.className = "full-screen-image-backdrop";
+        head.appendChild(style);
+        body.appendChild(backDrop);
+    }
+    const init = function () {
         document.addEventListener('click', function (event) {
             if (event && event.target && event.target.className &&
                 event.target.className.includes('zoomable-image')) {
                 zoomUnzoomImage.call(event.target)
             }
         });
+        injectCssAndBackDrop();
     }
 
     return {
