@@ -1,4 +1,3 @@
-"use strict";
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
@@ -9,10 +8,11 @@
         window.smoothImageZoom = factory();
     }
 }(function () {
+    "use strict";
 
-    let imageResizing = false;
+    var imageResizing = false;
 
-    const zoomUnzoomImage = function (resizeEvent) {
+    var zoomUnzoomImage = function (resizeEvent) {
         if (!resizeEvent && this.classList.contains('zoomed')) {
             this.classList.remove('zoomed');
             this.style.transform = "";
@@ -21,7 +21,7 @@
             removeResizeListener();
         }
         else {
-            let imageCordinates
+            var imageCordinates;
             if (resizeEvent) {
                 imageCordinates = this._originalImageCordinates;
             }
@@ -30,21 +30,21 @@
                 this._originalImageCordinates = imageCordinates;
             }
 
-            const deviceRatio = window.innerHeight / window.innerWidth;
-            const imageRatio = imageCordinates.height / imageCordinates.width;
+            var deviceRatio = window.innerHeight / window.innerWidth;
+            var imageRatio = imageCordinates.height / imageCordinates.width;
 
-            const imageScale = deviceRatio > imageRatio ?
+            var imageScale = deviceRatio > imageRatio ?
                 window.innerWidth / imageCordinates.width :
                 window.innerHeight / imageCordinates.height;
 
-            const imageX = ((imageCordinates.left + (imageCordinates.width) / 2));
-            const imageY = ((imageCordinates.top + (imageCordinates.height) / 2));
+            var imageX = ((imageCordinates.left + (imageCordinates.width) / 2));
+            var imageY = ((imageCordinates.top + (imageCordinates.height) / 2));
 
-            const bodyX = (window.innerWidth) / 2;
-            const bodyY = (window.innerHeight) / 2;
+            var bodyX = (window.innerWidth) / 2;
+            var bodyY = (window.innerHeight) / 2;
 
-            const xOffset = (bodyX - imageX) / (imageScale);
-            const yOffset = (bodyY - imageY) / (imageScale);
+            var xOffset = (bodyX - imageX) / (imageScale);
+            var yOffset = (bodyY - imageY) / (imageScale);
 
             this.style.transform = "scale(" + imageScale + ") translate(" + xOffset + "px," + yOffset + "px) ";
             this.classList.add('zoomed');
@@ -52,59 +52,71 @@
             registerZoomOutListeners();
             registerResizeListener();
         }
-    }
+    };
 
-    const registerZoomOutListeners = function () {
+    var registerZoomOutListeners = function () {
         // zoom out on scroll
         document.addEventListener('scroll', scrollZoomOut);
         // zoom out on escape
         document.addEventListener('keyup', escapeClickZoomOut);
         // zoom out on clicking the backdrop
         document.querySelector('.full-screen-image-backdrop').addEventListener('click', backDropClickZoomOut);
-    }
+    };
 
-    const removeZoomOutListeners = function () {
+    var removeZoomOutListeners = function () {
         document.removeEventListener('scroll', scrollZoomOut);
         document.removeEventListener('keyup', escapeClickZoomOut);
         document.querySelector('.full-screen-image-backdrop').removeEventListener('click', backDropClickZoomOut);
-    }
+    };
 
-    const registerResizeListener = function () {
-        window.addEventListener('resize', onWindowResize)
-    }
+    var registerResizeListener = function () {
+        window.addEventListener('resize', onWindowResize);
+    };
 
-    const removeResizeListener = function () {
-        window.removeEventListener('resize', onWindowResize)
-    }
+    var removeResizeListener = function () {
+        window.removeEventListener('resize', onWindowResize);
+    };
 
-    const scrollZoomOut = function () {
+    var scrollZoomOut = function () {
         if (document.querySelector('.zoomable-image.zoomed') && !imageResizing) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
-    }
-    const backDropClickZoomOut = function () {
+    };
+    var backDropClickZoomOut = function () {
         if (document.querySelector('.zoomable-image.zoomed')) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
-    }
-    const escapeClickZoomOut = function (event) {
+    };
+    var escapeClickZoomOut = function (event) {
         if (event.key === "Escape" && document.querySelector('.zoomable-image.zoomed')) {
             zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'));
         }
-    }
+    };
 
-    const onWindowResize = function () {
+    var onWindowResize = function () {
         imageResizing = true;
-        if (document.querySelector('.zoomable-image.zoomed')) {
-            debounce(
-                function () {
-                    zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'), true)
-                    imageResizing = false;
-                }, 100)()
-        }
-    }
+        debouncedResize();
+    };
 
-    const getBoundingClientRect = function (element) {
+    var debounce = function (func, delay) {
+        var debounceTimer;
+        return function () {
+            var context = this;
+            var args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                func.apply(context, args);
+            }, delay);
+        };
+    };
+    var debouncedResize = debounce(function () {
+        if (document.querySelector('.zoomable-image.zoomed')) {
+            zoomUnzoomImage.call(document.querySelector('.zoomable-image.zoomed'), true);
+            imageResizing = false;
+        }
+    }, 100);
+
+    var getBoundingClientRect = function (element) {
         var rect = element.getBoundingClientRect();
         return {
             top: rect.top,
@@ -116,28 +128,19 @@
             x: rect.x,
             y: rect.y
         };
-    }
-    const debounce = function (func, delay) {
-        let debounceTimer
-        return function () {
-            const context = this
-            const args = arguments
-            clearTimeout(debounceTimer)
-            debounceTimer
-                = setTimeout(() => func.apply(context, args), delay)
-        }
-    }
-    const injectCssAndBackDrop = function () {
-        let myStyle = [
+    };
+
+    var injectCssAndBackDrop = function () {
+        var myStyle = [
             ".zoomable-image { max-width: 100%; height: auto; transition: transform 0.3s; cursor: zoom-in; }",
             ".zoomable-image.zoomed { z-index: 100; position: relative; cursor: zoom-out;}",
             ".full-screen-image-backdrop.zoomed { position: fixed; top: 0; right: 0; left: 0; bottom: 0; z-index: 50; background-color: rgba(255, 255, 255, 0.95); }"
-        ].join(' ')
+        ].join(' ');
         var head = document.head || document.getElementsByTagName('head')[0];
         var body = document.body || document.getElementsByTagName('body')[0];
 
         var style = document.createElement('style');
-        var backDrop = document.createElement('div')
+        var backDrop = document.createElement('div');
 
         style.type = "text/css";
         style.appendChild(document.createTextNode(myStyle));
@@ -145,19 +148,19 @@
         backDrop.className = "full-screen-image-backdrop";
         head.appendChild(style);
         body.appendChild(backDrop);
-    }
-    const init = function () {
+    };
+    var init = function () {
         document.addEventListener('click', function (event) {
             if (event && event.target && event.target.className &&
                 event.target.className.includes('zoomable-image')) {
-                zoomUnzoomImage.call(event.target)
+                zoomUnzoomImage.call(event.target);
             }
         });
         injectCssAndBackDrop();
-    }
+    };
 
     return {
         init: init
-    }
+    };
 
-}))
+}));
